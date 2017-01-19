@@ -1,4 +1,4 @@
-//
+ //
 // ORGMEngine.m
 //
 // Copyright (c) 2012 ap4y (lod@pisem.net)
@@ -117,8 +117,7 @@ typedef NS_ENUM(NSUInteger, ORGMEngineBufferingSourceState) {
     }
     ORGMConverter *converter = [[ORGMConverter alloc] initWithInputUnit:self.input bufferingSource:self.buffering_source];
     self.converter = converter;
-    ORGMOutputUnit *output = [[outputUnitClass alloc] initWithConverter:self.converter];
-    output.outputFormat = self.outputFormat;
+    ORGMOutputUnit *output = [[outputUnitClass alloc] initWithConverter:self.converter outputFormat:self.outputFormat];
     output.didChangeSampleRateBlock = self.outputUnitDidChangeSampleRateBlock;
     output.didConvertSoundBlock = self.outputUnitDidConvertSoundBlock;
     output.didRenderSoundBlock = self.outputUnitDidRenderSoundBlock;

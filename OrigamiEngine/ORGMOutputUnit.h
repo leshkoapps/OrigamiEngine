@@ -61,20 +61,21 @@ typedef void(^ORGMOutputUnitDidConvertSoundBlock)(ORGMOutputUnit *outputUnit,UIn
 - (BOOL)isProcessing;
 
 /**
- Engine output format
- */
-@property (assign, nonatomic) ORGMEngineOutputFormat outputFormat;
-
-/**
  Returns initialized `ORGMOutputUnit` object and specifies converter source.
 
  @param converter An converter object used as a data source.
 
  @return An initialized `ORGMOutputUnit` object.
  **/
-- (instancetype)initWithConverter:(ORGMConverter *)converter;
+
+- (instancetype)initWithConverter:(ORGMConverter *)converter outputFormat:(ORGMEngineOutputFormat)outputFormat;
 
 @property (readonly, strong, nonatomic) ORGMConverter *converter;
+
+/**
+ Engine output format
+ */
+@property (assign, nonatomic, readonly) ORGMEngineOutputFormat outputFormat;
 
 /**
  Returns supported `PCM` audio format.

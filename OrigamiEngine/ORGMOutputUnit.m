@@ -30,7 +30,7 @@
     AudioStreamBasicDescription _format;
     unsigned long long _amountPlayed;
     BOOL _processing;
-   
+    ORGMEngineOutputFormat _outputFormat;
 }
 
 @property (strong, nonatomic) ORGMConverter *converter;
@@ -43,14 +43,15 @@
 
 @implementation ORGMOutputUnit
 
-- (instancetype)initWithConverter:(ORGMConverter *)converter {
+- (instancetype)initWithConverter:(ORGMConverter *)converter outputFormat:(ORGMEngineOutputFormat)outputFormat{
     self = [super init];
     if (self) {
+        _outputFormat = outputFormat;
         _outputUnit = NULL;
-        [self setup];
         self.converter = converter;
         _amountPlayed = 0;
         _processing = NO;
+        [self setup];
     }
     return self;
 }
@@ -60,6 +61,10 @@
 }
 
 #pragma mark - public
+
+- (ORGMEngineOutputFormat)outputFormat{
+    return _outputFormat;
+}
 
 - (AudioStreamBasicDescription)format {
     return _format;
@@ -304,6 +309,31 @@ static OSStatus Sound_Renderer(void *inRefCon,
     }
 
     [self setFormat:&deviceFormat];
+    
+    
+    uint32_t format4cc = CFSwapInt32HostToBig(deviceFormat.mFormatID);
+    
+    NSLog(@"Sample Rate: %f", deviceFormat.mSampleRate);
+    NSLog(@"Channels: %u", (unsigned int)deviceFormat.mChannelsPerFrame);
+    NSLog(@"Bits: %u", (unsigned int)deviceFormat.mBitsPerChannel);
+    NSLog(@"BytesPerFrame: %u", (unsigned int)deviceFormat.mBytesPerFrame);
+    NSLog(@"BytesPerPacket: %u", (unsigned int)deviceFormat.mBytesPerPacket);
+    NSLog(@"FramesPerPacket: %u", (unsigned int)deviceFormat.mFramesPerPacket);
+    NSLog(@"Format Flags: %d", (unsigned int)deviceFormat.mFormatFlags);
+    NSLog(@"Format Flags: %4.4s", (char *)&format4cc);
+    NSLog(@"kAudioFormatFlagIsFloat: %@", @((deviceFormat.mFormatFlags&kAudioFormatFlagIsFloat)==kAudioFormatFlagIsFloat));
+    NSLog(@"kAudioFormatFlagIsBigEndian: %@", @((deviceFormat.mFormatFlags&kAudioFormatFlagIsBigEndian)==kAudioFormatFlagIsBigEndian));
+    NSLog(@"kAudioFormatFlagIsSignedInteger: %@", @((deviceFormat.mFormatFlags&kAudioFormatFlagIsSignedInteger)==kAudioFormatFlagIsSignedInteger));
+    NSLog(@"kAudioFormatFlagIsPacked: %@", @((deviceFormat.mFormatFlags&kAudioFormatFlagIsPacked)==kAudioFormatFlagIsPacked));
+    NSLog(@"kAudioFormatFlagIsAlignedHigh: %@", @((deviceFormat.mFormatFlags&kAudioFormatFlagIsAlignedHigh)==kAudioFormatFlagIsAlignedHigh));
+    NSLog(@"kAudioFormatFlagIsNonInterleaved: %@", @((deviceFormat.mFormatFlags&kAudioFormatFlagIsNonInterleaved)==kAudioFormatFlagIsNonInterleaved));
+    NSLog(@"kAudioFormatFlagIsNonMixable: %@", @((deviceFormat.mFormatFlags&kAudioFormatFlagIsNonMixable)==kAudioFormatFlagIsNonMixable));
+    NSLog(@"kAppleLosslessFormatFlag_16BitSourceData: %@", @((deviceFormat.mFormatFlags&kAppleLosslessFormatFlag_16BitSourceData)==kAppleLosslessFormatFlag_16BitSourceData));
+    NSLog(@"kAppleLosslessFormatFlag_20BitSourceData: %@", @((deviceFormat.mFormatFlags&kAppleLosslessFormatFlag_20BitSourceData)==kAppleLosslessFormatFlag_20BitSourceData));
+    NSLog(@"kAppleLosslessFormatFlag_24BitSourceData: %@", @((deviceFormat.mFormatFlags&kAppleLosslessFormatFlag_24BitSourceData)==kAppleLosslessFormatFlag_24BitSourceData));
+    NSLog(@"kAppleLosslessFormatFlag_32BitSourceData: %@", @((deviceFormat.mFormatFlags&kAppleLosslessFormatFlag_32BitSourceData)==kAppleLosslessFormatFlag_32BitSourceData));
+    
+    
     return YES;
 }
 
