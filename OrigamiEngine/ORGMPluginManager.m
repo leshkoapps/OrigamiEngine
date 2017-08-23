@@ -32,6 +32,8 @@
 #import "CueSheetContainer.h"
 #import "M3uContainer.h"
 
+#import "OggVorbisFileDecoder.h"
+
 @interface ORGMPluginManager ()
 @property(strong, nonatomic) NSMutableDictionary *sources;
 @property(strong, nonatomic) NSMutableDictionary *decoders;
@@ -73,6 +75,7 @@
         Class class;
         if ((class = NSClassFromString(@"FlacDecoder"))) [self registerDecoder:class forFileTypes:@[ @"flac" ]];
         if ((class = NSClassFromString(@"OpusFileDecoder"))) [self registerDecoder:class forFileTypes:@[ @"opus" ]];
+        if ((class = NSClassFromString(@"OggVorbisFileDecoder"))) [self registerDecoder:class forFileTypes:@[ @"ogg" ]];
         
         /* Containers */        
         NSMutableDictionary *containersDict = [NSMutableDictionary dictionary];

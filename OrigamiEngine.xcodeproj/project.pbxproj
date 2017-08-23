@@ -94,6 +94,8 @@
 		95F27FDE17F6E1B4009E13C6 /* OpusFile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95C8739817F6C97500F6C878 /* OpusFile.framework */; };
 		95F27FDF17F6E1EE009E13C6 /* Ogg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95C8739D17F6CA4F00F6C878 /* Ogg.framework */; };
 		95F27FE017F6E200009E13C6 /* Opus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95C8739B17F6CA4300F6C878 /* Opus.framework */; };
+		EF8841B31F4D74AF00BF909F /* Vorbis.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF8841B21F4D74AF00BF909F /* Vorbis.framework */; };
+		EF8841B61F4D751F00BF909F /* OggVorbisFileDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = EF8841B51F4D751F00BF909F /* OggVorbisFileDecoder.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -203,6 +205,11 @@
 		95EE6A7C15D267D5001AD694 /* HTTPSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPSource.m; path = Plugins/HTTPSource.m; sourceTree = "<group>"; };
 		95EE6A7E15D26811001AD694 /* FlacDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FlacDecoder.h; path = Plugins/FlacDecoder.h; sourceTree = "<group>"; };
 		95EE6A7F15D26811001AD694 /* FlacDecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FlacDecoder.m; path = Plugins/FlacDecoder.m; sourceTree = "<group>"; };
+		EF8841B21F4D74AF00BF909F /* Vorbis.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Vorbis.framework; path = "Audio-Frameworks/Vorbis/Vorbis.framework"; sourceTree = "<group>"; };
+		EF8841B41F4D751F00BF909F /* OggVorbisFileDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OggVorbisFileDecoder.h; path = Plugins/OggVorbisFileDecoder.h; sourceTree = "<group>"; };
+		EF8841B51F4D751F00BF909F /* OggVorbisFileDecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OggVorbisFileDecoder.m; path = Plugins/OggVorbisFileDecoder.m; sourceTree = "<group>"; };
+		EF8841B71F4D774600BF909F /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		EF8841B91F4D774E00BF909F /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/CoreAudio.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -225,6 +232,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				95F27FE017F6E200009E13C6 /* Opus.framework in Frameworks */,
+				EF8841B31F4D74AF00BF909F /* Vorbis.framework in Frameworks */,
 				95F27FDF17F6E1EE009E13C6 /* Ogg.framework in Frameworks */,
 				95F27FDE17F6E1B4009E13C6 /* OpusFile.framework in Frameworks */,
 				959B586315CEE1DF00D44955 /* AudioToolbox.framework in Frameworks */,
@@ -299,6 +307,9 @@
 		959B580B15CEE13C00D44955 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EF8841B91F4D774E00BF909F /* CoreAudio.framework */,
+				EF8841B71F4D774600BF909F /* CoreAudio.framework */,
+				EF8841B21F4D74AF00BF909F /* Vorbis.framework */,
 				95C8739D17F6CA4F00F6C878 /* Ogg.framework */,
 				95C8739B17F6CA4300F6C878 /* Opus.framework */,
 				95C8739817F6C97500F6C878 /* OpusFile.framework */,
@@ -409,6 +420,8 @@
 				95317BA215D552AA0029D115 /* M3uContainer.m */,
 				95C86BC717F688AD00F6C878 /* OpusFileDecoder.h */,
 				95C86BC817F688AD00F6C878 /* OpusFileDecoder.m */,
+				EF8841B41F4D751F00BF909F /* OggVorbisFileDecoder.h */,
+				EF8841B51F4D751F00BF909F /* OggVorbisFileDecoder.m */,
 			);
 			name = Plugin;
 			sourceTree = "<group>";
@@ -604,6 +617,7 @@
 				95C86BC917F688AD00F6C878 /* OpusFileDecoder.m in Sources */,
 				95317ADC15D43C7B0029D115 /* ORGMPluginManager.m in Sources */,
 				95317AE915D445010029D115 /* CueSheet.m in Sources */,
+				EF8841B61F4D751F00BF909F /* OggVorbisFileDecoder.m in Sources */,
 				95317AEA15D445010029D115 /* CueSheetContainer.m in Sources */,
 				95317AEB15D445010029D115 /* CueSheetDecoder.m in Sources */,
 				95317AED15D445010029D115 /* CueSheetTrack.m in Sources */,
@@ -795,6 +809,7 @@
 					"$(SRCROOT)/Audio-Frameworks/bin/opusfile",
 					"$(SRCROOT)/Audio-Frameworks/bin/ogg",
 					"$(SRCROOT)/Audio-Frameworks/bin/opus",
+					"$(PROJECT_DIR)/Audio-Frameworks/Vorbis",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "OrigamiEngine/OrigamiEngine-Prefix.pch";
@@ -820,6 +835,7 @@
 					"$(SRCROOT)/Audio-Frameworks/bin/opusfile",
 					"$(SRCROOT)/Audio-Frameworks/bin/ogg",
 					"$(SRCROOT)/Audio-Frameworks/bin/opus",
+					"$(PROJECT_DIR)/Audio-Frameworks/Vorbis",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "OrigamiEngine/OrigamiEngine-Prefix.pch";
