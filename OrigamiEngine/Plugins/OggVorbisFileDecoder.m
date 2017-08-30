@@ -42,13 +42,13 @@
     };
 
     int result = ov_open_callbacks((__bridge void *)(self.source), &mOggVorbisFile, NULL, 0, callbacks);
-    NSAssert(result >= 0, @"ov_open_callbacks succeeded.");
+    @try {NSAssert(result >= 0, @"ov_open_callbacks succeeded.");} @catch (NSException *exception) {}
     if (result<0) {
         return NO;
     }
     
     vorbis_info* pInfo = ov_info(&mOggVorbisFile, -1);
-    NSAssert(pInfo!=NULL, @"ov_info succeeded.");
+    @try { NSAssert(pInfo!=NULL, @"ov_info succeeded.");} @catch (NSException *exception) {}
     if (pInfo==NULL) {
         return NO;
     }
