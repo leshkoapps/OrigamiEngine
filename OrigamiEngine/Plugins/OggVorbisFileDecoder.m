@@ -14,12 +14,12 @@
 #define OGG_VORBIS_WORDSIZE 2
 
 @interface OggVorbisFileDecoder (){
-   OggVorbis_File mOggVorbisFile;
-   Float64 mRate;
-   UInt32 mChannels;
-   UInt32 mBitsPerSample;
-   int64_t mTotalFrames;
-   BOOL mSeekable;
+    OggVorbis_File mOggVorbisFile;
+    Float64 mRate;
+    UInt32 mChannels;
+    UInt32 mBitsPerSample;
+    int64_t mTotalFrames;
+    BOOL mSeekable;
 }
 
 @property (strong, atomic) NSMutableDictionary *decoderMetadata;
@@ -40,7 +40,7 @@
         NULL,
         TellCallback
     };
-
+    
     int result = ov_open_callbacks((__bridge void *)(self.source), &mOggVorbisFile, NULL, 0, callbacks);
     @try {NSAssert(result >= 0, @"ov_open_callbacks succeeded.");} @catch (NSException *exception) {}
     if (result<0) {
@@ -90,7 +90,7 @@
 }
 
 - (int)readAudio:(void *)buffer frames:(UInt32)frames {
-
+    
     UInt32 mDataByteSize = frames * mChannels * (mBitsPerSample/8);
     
     int bigEndian = 0;
@@ -158,19 +158,25 @@
 #pragma mark - callback
 
 static size_t ReadCallback(void *ptr, size_t size, size_t nmemb, void *datasource) {
-    id<ORGMSource> source = (__bridge id<ORGMSource>)(datasource);
-    int result = [source read:ptr amount:(int)nmemb];
-    return result;
+    @autoreleasepool{
+        id<ORGMSource> source = (__bridge id<ORGMSource>)(datasource);
+        int result = [source read:ptr amount:(int)nmemb];
+        return result;
+    }
 }
 
 static int SeekCallback(void *datasource, ogg_int64_t offset, int whence) {
-    id<ORGMSource> source = (__bridge id<ORGMSource>)(datasource);
-    return [source seek:(long)offset whence:whence] ? 0 : -1;
+    @autoreleasepool{
+        id<ORGMSource> source = (__bridge id<ORGMSource>)(datasource);
+        return [source seek:(long)offset whence:whence] ? 0 : -1;
+    }
 }
 
 static long TellCallback(void *datasource) {
-    id<ORGMSource> source = (__bridge id<ORGMSource>)(datasource);
-    return [source tell];
+    @autoreleasepool{
+        id<ORGMSource> source = (__bridge id<ORGMSource>)(datasource);
+        return [source tell];
+    }
 }
 
 @end

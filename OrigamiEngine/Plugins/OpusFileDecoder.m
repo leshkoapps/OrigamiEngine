@@ -42,11 +42,11 @@
 #pragma mark - ORGMDecoder
 
 + (NSArray *)fileTypes {
-	return [NSArray arrayWithObjects:@"opus", nil];
+    return [NSArray arrayWithObjects:@"opus", nil];
 }
 
 - (NSDictionary *)properties {
-	return [NSDictionary dictionaryWithObjectsAndKeys:
+    return [NSDictionary dictionaryWithObjectsAndKeys:
             [NSNumber numberWithInt:2], @"channels",
             [NSNumber numberWithInt:16], @"bitsPerSample",
             [NSNumber numberWithFloat:48000], @"sampleRate",
@@ -86,7 +86,7 @@
 }
 
 - (long)seek:(long)sample {
-	return op_pcm_seek(self.decoder, sample);
+    return op_pcm_seek(self.decoder, sample);
 }
 
 - (void)close {
@@ -132,19 +132,25 @@
 #pragma mark - callback
 
 static int ReadCallback(void *stream, unsigned char *ptr, int nbytes) {
-    id<ORGMSource> source = (__bridge id<ORGMSource>)(stream);
-    int result = [source read:ptr amount:nbytes];
-	return result;
+    @autoreleasepool{
+        id<ORGMSource> source = (__bridge id<ORGMSource>)(stream);
+        int result = [source read:ptr amount:nbytes];
+        return result;
+    }
 }
 
 static int SeekCallback(void *stream, opus_int64 offset, int whence) {
-	id<ORGMSource> source = (__bridge id<ORGMSource>)(stream);
-    return [source seek:(long)offset whence:whence] ? 0 : -1;
+    @autoreleasepool{
+        id<ORGMSource> source = (__bridge id<ORGMSource>)(stream);
+        return [source seek:(long)offset whence:whence] ? 0 : -1;
+    }
 }
 
 static opus_int64 TellCallback(void *stream) {
-	id<ORGMSource> source = (__bridge id<ORGMSource>)(stream);
-    return [source tell];
+    @autoreleasepool{
+        id<ORGMSource> source = (__bridge id<ORGMSource>)(stream);
+        return [source tell];
+    }
 }
 
 @end
