@@ -63,35 +63,39 @@
 }
 
 - (long)size {
-    if(_fd!=NULL){
-        long curpos = ftell(_fd);
-        fseek (_fd, 0, SEEK_END);
-        long size = ftell(_fd);
-        fseek(_fd, curpos, SEEK_SET);
-        return size;
+    @synchronized(self){
+        if(_fd!=NULL){
+            long curpos = ftell(_fd);
+            fseek (_fd, 0, SEEK_END);
+            long size = ftell(_fd);
+            fseek(_fd, curpos, SEEK_SET);
+            return size;
+        }
     }
     return 0;
 }
 
 - (BOOL)open:(NSURL *)url {
-	[self setUrl:url];
-	_fd = fopen([[url path] UTF8String], "r");
-    BOOL success = (_fd != NULL);
-    __weak typeof (self) weakSelf = self;
-    dispatch_async(self.callback_queue, ^{
-        if(success){
-            if([weakSelf.sourceDelegate respondsToSelector:@selector(sourceDidReceiveData:)]){
-                [weakSelf.sourceDelegate sourceDidReceiveData:weakSelf];
+    @synchronized(self){
+        [self setUrl:url];
+        _fd = fopen([[url path] UTF8String], "r");
+        BOOL success = (_fd != NULL);
+        __weak typeof (self) weakSelf = self;
+        dispatch_async(self.callback_queue, ^{
+            if(success){
+                if([weakSelf.sourceDelegate respondsToSelector:@selector(sourceDidReceiveData:)]){
+                    [weakSelf.sourceDelegate sourceDidReceiveData:weakSelf];
+                }
             }
-        }
-        else{
-            NSError *error = [[NSError alloc] initWithDomain:@"FileSourceErrorDomain" code:-1 userInfo:nil];
-            if([weakSelf.sourceDelegate respondsToSelector:@selector(source:didFailWithError:)]){
-                [weakSelf.sourceDelegate source:weakSelf didFailWithError:error];
+            else{
+                NSError *error = [[NSError alloc] initWithDomain:@"FileSourceErrorDomain" code:-1 userInfo:nil];
+                if([weakSelf.sourceDelegate respondsToSelector:@selector(source:didFailWithError:)]){
+                    [weakSelf.sourceDelegate source:weakSelf didFailWithError:error];
+                }
             }
-        }
-    });
-	return success;
+        });
+        return success;
+    }
 }
 
 - (BOOL)seekable {
@@ -103,17 +107,21 @@
 }
 
 - (BOOL)seek:(long)position whence:(int)whence {
-    if(_fd!=NULL){
-        return (fseek(_fd, position, whence) == 0);
+    @synchronized(self){
+        if(_fd!=NULL){
+            return (fseek(_fd, position, whence) == 0);
+        }
+        return NO;
     }
-    return NO;
 }
 
 - (long)tell {
-    if(_fd!=NULL){
-        return ftell(_fd);
+    @synchronized(self){
+        if(_fd!=NULL){
+            return ftell(_fd);
+        }
+        return 0;
     }
-    return 0;
 }
 
 - (long)preloadSize{
@@ -121,17 +129,21 @@
 }
 
 - (int)read:(void *)buffer amount:(int)amount {
-    if(_fd!=NULL){
-        return (int)fread(buffer, 1, amount, _fd);
+    @synchronized(self){
+        if(_fd!=NULL){
+            return (int)fread(buffer, 1, amount, _fd);
+        }
+        return 0;
     }
-    return 0;
 }
 
 - (void)close {
-	if (_fd) {
-		fclose(_fd);
-		_fd = NULL;
-	}
+    @synchronized(self){
+        if (_fd) {
+            fclose(_fd);
+            _fd = NULL;
+        }
+    }
 }
 
 #pragma mark - private

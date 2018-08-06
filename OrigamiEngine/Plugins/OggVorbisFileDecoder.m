@@ -22,7 +22,7 @@
     BOOL mSeekable;
 }
 
-@property (strong, atomic) NSMutableDictionary *decoderMetadata;
+@property (strong, nonatomic) NSMutableDictionary *decoderMetadata;
 @property (strong, nonatomic) id<ORGMSource> source;
 
 @end
@@ -32,7 +32,9 @@
 
 - (BOOL)open:(id<ORGMSource>)s {
     [self setSource:s];
-    self.decoderMetadata = [NSMutableDictionary dictionary];
+    @synchronized(self){
+        self.decoderMetadata = [NSMutableDictionary dictionary];
+    }
     
     ov_callbacks callbacks = {
         ReadCallback,
@@ -86,7 +88,9 @@
 }
 
 - (NSDictionary *)metadata {
-    return self.decoderMetadata;
+    @synchronized(self){
+        return self.decoderMetadata;
+    }
 }
 
 - (int)readAudio:(void *)buffer frames:(UInt32)frames {
@@ -134,25 +138,27 @@
 #pragma mark - private
 
 - (void)parseMetadata {
-    @try {
-        char **ptr=ov_comment(&mOggVorbisFile,-1)->user_comments;
-        while(*ptr){
-            const char *comment = *ptr;
-            NSString *commentValue = [NSString stringWithUTF8String:comment];
-            if(commentValue!=nil){
-                NSRange range = [commentValue rangeOfString:@"="];
-                if(range.location!=NSNotFound){
-                    NSString *key = [commentValue substringWithRange:NSMakeRange(0, range.location)];
-                    NSString *value = [commentValue substringWithRange:
-                                       NSMakeRange(range.location + 1, commentValue.length - range.location - 1)];
-                    if (value!=nil && key!=nil){
-                        [self.decoderMetadata setObject:value forKey:[key lowercaseString]];
+    @synchronized(self){
+        @try {
+            char **ptr=ov_comment(&mOggVorbisFile,-1)->user_comments;
+            while(*ptr){
+                const char *comment = *ptr;
+                NSString *commentValue = [NSString stringWithUTF8String:comment];
+                if(commentValue!=nil){
+                    NSRange range = [commentValue rangeOfString:@"="];
+                    if(range.location!=NSNotFound){
+                        NSString *key = [commentValue substringWithRange:NSMakeRange(0, range.location)];
+                        NSString *value = [commentValue substringWithRange:
+                                           NSMakeRange(range.location + 1, commentValue.length - range.location - 1)];
+                        if (value!=nil && key!=nil){
+                            [self.decoderMetadata setObject:value forKey:[key lowercaseString]];
+                        }
                     }
                 }
+                ++ptr;
             }
-            ++ptr;
-        }
-    } @catch (NSException *exception) {}
+        } @catch (NSException *exception) {}
+    }
 }
 
 #pragma mark - callback

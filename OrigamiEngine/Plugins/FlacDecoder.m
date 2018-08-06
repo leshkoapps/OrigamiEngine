@@ -38,7 +38,7 @@
     long totalFrames;
 }
 
-@property (strong, atomic) NSMutableDictionary *decoderMetadata;
+@property (strong, nonatomic) NSMutableDictionary *decoderMetadata;
 @property (strong, nonatomic) id<ORGMSource> source;
 @property (assign, nonatomic) BOOL endOfStream;
 
@@ -74,7 +74,9 @@
 }
 
 - (NSDictionary *)metadata {
-    return self.decoderMetadata;
+    @synchronized(self){
+        return self.decoderMetadata;
+    }
 }
 
 - (int)readAudio:(void *)buffer frames:(UInt32)frames {
@@ -116,7 +118,10 @@
 - (BOOL)open:(id<ORGMSource>)s {
     [self setSource:s];
     
-    self.decoderMetadata = [NSMutableDictionary dictionary];
+    @synchronized(self){
+        self.decoderMetadata = [NSMutableDictionary dictionary];
+    }
+    
     decoder = FLAC__stream_decoder_new();
     if (decoder == NULL) {
         return NO;
@@ -344,7 +349,9 @@ void MetadataCallback(const FLAC__StreamDecoder *decoder,
                         NSString *value = [commentValue substringWithRange:NSMakeRange(range.location + 1,
                                                                                        commentValue.length - range.location - 1)];
                         if(key!=nil && value!=nil){
-                            [flacDecoder.decoderMetadata setObject:value forKey:[key lowercaseString]];
+                            @synchronized(flacDecoder){
+                                [flacDecoder.decoderMetadata setObject:value forKey:[key lowercaseString]];
+                            }
                         }
                     }
                 }
@@ -356,7 +363,9 @@ void MetadataCallback(const FLAC__StreamDecoder *decoder,
                 NSData *picture_data = [NSData dataWithBytes:picture.data
                                                       length:picture.data_length];
                 if(picture_data){
-                    [flacDecoder.decoderMetadata setObject:picture_data forKey:@"picture"];
+                    @synchronized(flacDecoder){
+                        [flacDecoder.decoderMetadata setObject:picture_data forKey:@"picture"];
+                    }
                 }
             }
         } else if (metadata->type == FLAC__METADATA_TYPE_STREAMINFO) {

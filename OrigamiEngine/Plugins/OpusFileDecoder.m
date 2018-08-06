@@ -26,7 +26,7 @@
 
 @interface OpusFileDecoder ()
 
-@property (strong, atomic) NSMutableDictionary *decoderMetadata;
+@property (strong, nonatomic) NSMutableDictionary *decoderMetadata;
 @property (strong, nonatomic) id<ORGMSource> source;
 @property (assign, nonatomic) int64_t totalFrames;
 @property (assign, nonatomic) OggOpusFile *decoder;
@@ -57,7 +57,9 @@
 }
 
 - (NSDictionary *)metadata {
-    return self.decoderMetadata;
+    @synchronized(self){
+        return self.decoderMetadata;
+    }
 }
 
 - (int)readAudio:(void *)buffer frames:(UInt32)frames {
@@ -68,7 +70,9 @@
 
 - (BOOL)open:(id<ORGMSource>)s {
     [self setSource:s];
-    self.decoderMetadata = [NSMutableDictionary dictionary];
+    @synchronized(self){
+        self.decoderMetadata = [NSMutableDictionary dictionary];
+    }
     OpusFileCallbacks callbacks = {
         ReadCallback,
         SeekCallback,
@@ -116,13 +120,17 @@
                     {
                         NSData *picture_data = [NSData dataWithBytes:picture.data length:picture.data_length];
                         if(picture_data){
-                            [self.decoderMetadata setObject:picture_data forKey:@"picture"];
+                            @synchronized(self){
+                                [self.decoderMetadata setObject:picture_data forKey:@"picture"];
+                            }
                         }
                         opus_picture_tag_clear(&picture);
                     }
                 }
                 else if (value!=nil && key!=nil){
-                    [self.decoderMetadata setObject:value forKey:[key lowercaseString]];
+                    @synchronized(self){
+                        [self.decoderMetadata setObject:value forKey:[key lowercaseString]];
+                    }
                 }
             }
         }
